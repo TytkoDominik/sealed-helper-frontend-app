@@ -142,7 +142,7 @@ class MoviesInsert extends Component {
                 this.getDeck();
             }}>
                 <Title>Show me my deck</Title>
-                <Label>Name: </Label>
+                <Label>TCO Nickname: </Label>
                 <InputText
                     type="text"
                     value={name}
@@ -168,7 +168,7 @@ class MoviesInsert extends Component {
         const { name, deckName, dokLink } = this.state
         return (
             <InfoContainer>
-                <InfoLine>Player Name: {name}</InfoLine>
+                <InfoLine>TCO Nickname: {name}</InfoLine>
 
                 <InfoLine>Deck Name: {deckName}</InfoLine>
 
