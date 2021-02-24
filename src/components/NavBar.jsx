@@ -20,7 +20,7 @@ class NavBar extends Component {
             <Container>
                 <Nav>
                     <Logo />
-                    <Link to="/sealed/player" className="navbar-brand">
+                    <Link to="./" className="navbar-brand">
                         CTD Sealed Helper
                     </Link>
                 </Nav>

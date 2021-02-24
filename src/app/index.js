@@ -7,15 +7,13 @@ import { MoviesInsert } from '../pages'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 function App() {
-    Router.browserHistory.push('/sealed/player');
-
     return (
         <Router>
             <NavBar />
             <Switch>
                 <Route path="/sealed/player" exact component={MoviesInsert} />
             </Switch>
-
+            <MoviesInsert />
         </Router>
     )
 }
