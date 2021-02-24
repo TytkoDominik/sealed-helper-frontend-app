@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'https://sealed-helper.azurewebsites.net/events'
+    baseURL: 'http://localhost:5000/events'
 })
 
 export const getPlayerDeck = payload => api.post(`/sealed/player`, payload)
