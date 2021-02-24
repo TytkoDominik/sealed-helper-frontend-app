@@ -5,6 +5,8 @@ import { NavBar } from '../components'
 import { MoviesInsert } from '../pages'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
     return (
@@ -14,6 +16,7 @@ function App() {
                 <Route path="/sealed/player" exact component={MoviesInsert} />
             </Switch>
             <MoviesInsert />
+            <ToastContainer />
         </Router>
     )
 }

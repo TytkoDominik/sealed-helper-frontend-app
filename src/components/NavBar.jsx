@@ -2,11 +2,6 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 
 import Logo from './Logo'
-import {Link} from "react-router-dom";
-
-const Container = styled.div.attrs({
-    className: 'container',
-})``
 
 const Nav = styled.nav.attrs({
     className: 'navbar navbar-expand-lg navbar-dark bg-dark',
@@ -14,17 +9,18 @@ const Nav = styled.nav.attrs({
     margin-bottom: 20 px;
 `
 
+const Title = styled.div`
+    font-size: 22px;
+    color: white;
+`
+
 class NavBar extends Component {
     render() {
         return (
-            <Container>
-                <Nav>
-                    <Logo />
-                    <Link to="./" className="navbar-brand">
-                        CTD Sealed Helper
-                    </Link>
-                </Nav>
-            </Container>
+            <Nav>
+                <Logo />
+                <Title>CTD Sealed Helper</Title>
+            </Nav>
         )
     }
 }

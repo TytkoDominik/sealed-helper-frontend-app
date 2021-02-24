@@ -1,39 +1,59 @@
 import React, { Component } from 'react'
 import api from '../api'
-
+import { toast, Toast } from 'react-toastify';
 import styled from 'styled-components'
+import { LoadingIndicator } from '../components/LoadingIndicator';
 
 const Title = styled.h1.attrs({
     className: 'h1',
-})``
+})`
+    align-self: center;
+`
 
-const Wrapper = styled.div.attrs({
+const Form = styled.form.attrs({
     className: 'form-group',
 })`
-    margin: 0 30px;
+    margin-top: 30px;
+    width: 415px;
+    display: flex;
+    flex-direction: column;
+`
+
+const CenteredVertically = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `
 
 const Label = styled.label`
-    margin: 5px;
+    margin-top: 10px;
+    margin-bottom: 3px;
+    margin-left: 2px;
 `
 
 const InputText = styled.input.attrs({
     className: 'form-control',
-})`
-    margin: 5px;
-`
+})``
 
 const Button = styled.button.attrs({
     className: `btn btn-primary`,
 })`
     margin: 15px 15px 15px 5px;
+    width: 150px;
+    height: 40px;
+    align-self: center;
 `
 
-const CancelButton = styled.a.attrs({
-    className: `btn btn-danger`,
-})`
-    margin: 15px 15px 15px 5px;
+const InfoContainer = styled.div`
+    margin-top: 30px;
+    padding: 15px;
 `
+
+const InfoLine = styled.div`
+    font-size: 25px;
+    margin-top: 5px;
+`
+
 
 class MoviesInsert extends Component {
     constructor(props) {
@@ -46,7 +66,8 @@ class MoviesInsert extends Component {
             deckName: '',
             helperState: 'waiting',
             errorMessage: '',
-            errorCode: ''
+            errorCode: '',
+            loading: false,
         }
     }
 
@@ -61,54 +82,71 @@ class MoviesInsert extends Component {
     }
 
     getDeck = async () => {
-        const { name, secret, dokLink, deckName } = this.state
+        const { name, secret } = this.state
         const payload = { name, secret }
 
-        await api.getPlayerDeck(payload).then(res => {
-
-            if (res.data.hasOwnProperty('errorData'))
-            {
-                this.setState({
-                    helperState: "errorReceived",
-                    errorCode: res.data.code,
-                    errorMessage: res.data.message
+        this.setState({ loading: true });
+        try {
+            const { data } = await api.getPlayerDeck(payload);
+            if (data.errorData) {
+                toast.error(`Wystąpił błąd: ${data.message}`, {
+                    position: "bottom-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
                 })
 
-                return;
+                this.setState({
+                    errorCode: data.code,
+                    errorMessage: data.message
+                })
+            } else {
+                this.setState({
+                    helperState: "deckReceived",
+                    name: data.name,
+                    deckName: data.generatedDeck.name,
+                    dokLink: data.generatedDeck.dokLink
+                })
             }
-
-
-            this.setState({
-                helperState: "deckReceived",
-                name: res.data.name,
-                deckName: res.data.generatedDeck.name,
-                dokLink: res.data.generatedDeck.dokLink
-            })
-        })
+        } catch (e) {
+            console.log(e);
+        } finally {
+            this.setState({ loading: false });
+        }
     }
 
     inputPhase()
     {
-        const { name, secret } = this.state
+        const { name, secret, loading } = this.state
         return (
-            <Wrapper>
-                <Title>Show me my deck</Title>
-                <Label>Name: </Label>
-                <InputText
-                    type="text"
-                    value={name}
-                    onChange={this.handleChangeInputName}
-                />
-
-                <Label>Secret: </Label>
-                <InputText
-                    type="text"
-                    value={secret}
-                    onChange={this.handleChangeInputSecret}
-                />
-
-                <Button onClick={this.getDeck}>Show Deck</Button>
-            </Wrapper>
+            <CenteredVertically>
+                <Form onSubmit={(event) => {
+                    event.preventDefault();
+                    this.getDeck();
+                }}>
+                    <Title>Show me my deck</Title>
+                    <Label>Name: </Label>
+                    <InputText
+                        type="text"
+                        value={name}
+                        onChange={this.handleChangeInputName}
+                        required
+                    />
+                    <Label>Secret: </Label>
+                    <InputText
+                        type="text"
+                        value={secret}
+                        onChange={this.handleChangeInputSecret}
+                        required
+                    />
+                    <Button type="submit" disabled={loading}>
+                        { loading ? <LoadingIndicator /> : "Show Deck"}
+                    </Button>
+                </Form>
+            </CenteredVertically>
         )
     }
 
@@ -116,15 +154,15 @@ class MoviesInsert extends Component {
     {
         const { name, deckName, dokLink } = this.state
         return (
-            <Wrapper>
-                <Label>Player Name: {name}</Label>
+            <CenteredVertically>
+                <InfoContainer>
+                    <InfoLine>Player Name: {name}</InfoLine>
 
-                <Label>Deck Name: {deckName} </Label>
+                    <InfoLine>Deck Name: {deckName}</InfoLine>
 
-                <Label>Link: </Label>
-                <a href={dokLink}>{dokLink}</a>
-
-            </Wrapper>
+                    <InfoLine>DoK Link: <a href={dokLink}>{dokLink}</a></InfoLine>
+                </InfoContainer>
+            </CenteredVertically>
         )
     }
 
@@ -132,10 +170,10 @@ class MoviesInsert extends Component {
     {
         const { errorMessage, errorCode } = this.state
         return (
-            <Wrapper>
+            <Form>
                 <Label>Error: {errorCode}</Label>
                 <Label>Message: {errorMessage} </Label>
-            </Wrapper>
+            </Form>
         )
     }
 
