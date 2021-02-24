@@ -3,6 +3,8 @@ import api from '../api'
 import { toast, Toast } from 'react-toastify';
 import styled from 'styled-components'
 import { LoadingIndicator } from '../components/LoadingIndicator';
+import eventLogo from '../assets/sealed-event-img-full.jpg';
+import TeamLogo from '../components/TeamLogo';
 
 const Title = styled.h1.attrs({
     className: 'h1',
@@ -13,7 +15,7 @@ const Title = styled.h1.attrs({
 const Form = styled.form.attrs({
     className: 'form-group',
 })`
-    margin-top: 30px;
+    margin-top: 15px;
     width: 415px;
     display: flex;
     flex-direction: column;
@@ -50,8 +52,21 @@ const InfoContainer = styled.div`
 `
 
 const InfoLine = styled.div`
-    font-size: 25px;
+    font-size: 17px;
     margin-top: 5px;
+`
+
+const EventImage = styled.img`
+    height: 215px;
+`
+
+const Shadow = styled.div`
+    margin-top: 30px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 515px;
 `
 
 
@@ -90,7 +105,7 @@ class MoviesInsert extends Component {
             const { data } = await api.getPlayerDeck(payload);
             if (data.errorData) {
                 toast.error(`Wystąpił błąd: ${data.message}`, {
-                    position: "bottom-center",
+                    position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
                     closeOnClick: true,
@@ -122,31 +137,29 @@ class MoviesInsert extends Component {
     {
         const { name, secret, loading } = this.state
         return (
-            <CenteredVertically>
-                <Form onSubmit={(event) => {
-                    event.preventDefault();
-                    this.getDeck();
-                }}>
-                    <Title>Show me my deck</Title>
-                    <Label>Name: </Label>
-                    <InputText
-                        type="text"
-                        value={name}
-                        onChange={this.handleChangeInputName}
-                        required
-                    />
-                    <Label>Secret: </Label>
-                    <InputText
-                        type="text"
-                        value={secret}
-                        onChange={this.handleChangeInputSecret}
-                        required
-                    />
-                    <Button type="submit" disabled={loading}>
-                        { loading ? <LoadingIndicator /> : "Show Deck"}
-                    </Button>
-                </Form>
-            </CenteredVertically>
+            <Form onSubmit={(event) => {
+                event.preventDefault();
+                this.getDeck();
+            }}>
+                <Title>Show me my deck</Title>
+                <Label>Name: </Label>
+                <InputText
+                    type="text"
+                    value={name}
+                    onChange={this.handleChangeInputName}
+                    required
+                />
+                <Label>Secret: </Label>
+                <InputText
+                    type="text"
+                    value={secret}
+                    onChange={this.handleChangeInputSecret}
+                    required
+                />
+                <Button type="submit" disabled={loading}>
+                    { loading ? <LoadingIndicator /> : "Show Deck"}
+                </Button>
+            </Form>
         )
     }
 
@@ -154,47 +167,28 @@ class MoviesInsert extends Component {
     {
         const { name, deckName, dokLink } = this.state
         return (
-            <CenteredVertically>
-                <InfoContainer>
-                    <InfoLine>Player Name: {name}</InfoLine>
+            <InfoContainer>
+                <InfoLine>Player Name: {name}</InfoLine>
 
-                    <InfoLine>Deck Name: {deckName}</InfoLine>
+                <InfoLine>Deck Name: {deckName}</InfoLine>
 
-                    <InfoLine>DoK Link: <a href={dokLink}>{dokLink}</a></InfoLine>
-                </InfoContainer>
-            </CenteredVertically>
-        )
-    }
-
-    showErrorPhase()
-    {
-        const { errorMessage, errorCode } = this.state
-        return (
-            <Form>
-                <Label>Error: {errorCode}</Label>
-                <Label>Message: {errorMessage} </Label>
-            </Form>
+                <InfoLine>DoK Link:</InfoLine>
+                <InfoLine><a href={dokLink}>{dokLink}</a></InfoLine>
+            </InfoContainer>
         )
     }
 
     render() {
-
         const { helperState } = this.state;
-        switch (helperState)
-        {
-            case "waiting":
-            {
-                return this.inputPhase()
-            }
-            case "deckReceived":
-            {
-                return this.showDeckPhase()
-            }
-            case "errorReceived":
-            {
-                return this.showErrorPhase()
-            }
-        }
+        return (
+            <CenteredVertically>
+                <Shadow>
+                    <EventImage src={eventLogo} />
+                    {helperState === 'waiting' ? this.inputPhase() : this.showDeckPhase() }
+                </Shadow>
+            </CenteredVertically>
+
+        )
     }
 }
 

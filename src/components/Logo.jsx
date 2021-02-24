@@ -1,18 +1,20 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-import logo from '../logo.png'
+import logo from '../assets/logo.png';
 
-const Wrapper = styled.a.attrs({
-    className: 'navbar-brand',
-})``
+const Image = styled.img`
+    width: 50px;
+    height: 50px;
+    margin-right: 5px;
+`
 
 class Logo extends Component {
     render() {
         return (
-            <Wrapper href="http://kluczdodis.pl">
-                <img src={logo} width="50" height="50" alt="kluczdodis.pl" />
-            </Wrapper>
+            <div>
+                <Image src={logo} alt="kluczdodis.pl" />
+            </div>
         )
     }
 }
