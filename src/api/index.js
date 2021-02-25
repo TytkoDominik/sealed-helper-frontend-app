@@ -6,10 +6,12 @@ const api = axios.create({
 
 export const getPlayerDeck = payload => api.post(`/sealed/player`, payload)
 export const getAllPlayersDecks = payload => api.post(`/players`, payload)
+export const rerollPlayerDeck = payload => api.post(`/sealed/reroll`, payload)
 
 const apis = {
     getPlayerDeck,
     getAllPlayersDecks,
+    rerollPlayerDeck
 }
 
 export default apis

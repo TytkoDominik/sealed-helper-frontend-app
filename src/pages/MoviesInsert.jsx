@@ -46,6 +46,16 @@ const Button = styled.button.attrs({
     align-self: center;
 `
 
+const RerollButton = styled.button.attrs({
+    className: `btn btn-primary`,
+})`
+    background: #a7081b;
+    margin: 15px 15px 15px 5px;
+    width: 150px;
+    height: 40px;
+    align-self: center;
+`
+
 const InfoContainer = styled.div`
     margin-top: 30px;
     padding: 15px;
@@ -83,6 +93,8 @@ class MoviesInsert extends Component {
             errorMessage: '',
             errorCode: '',
             loading: false,
+            rerollDesc: '',
+            rerollActive: false
         }
     }
 
@@ -94,6 +106,44 @@ class MoviesInsert extends Component {
     handleChangeInputSecret = async event => {
         const secret = event.target.value
         this.setState({ secret })
+    }
+
+    rerollDeck = async () => {
+        const { name, secret } = this.state
+        const payload = { name, secret }
+
+        this.setState({ loading: true });
+        try {
+            const { data } = await api.rerollPlayerDeck(payload);
+            if (data.errorData) {
+                toast.error(`Wystąpił błąd: ${data.message}`, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                })
+
+                this.setState({
+                    errorCode: data.code,
+                    errorMessage: data.message
+                })
+            } else {
+                this.setState({
+                    helperState: "deckReceived",
+                    deckName: data.generatedDeck.name,
+                    dokLink: data.generatedDeck.dokLink,
+                    rerollDesc: data.rerollDesc,
+                    rerollActive: data.rerollActive
+                })
+            }
+        } catch (e) {
+            console.log(e);
+        } finally {
+            this.setState({ loading: false });
+        }
     }
 
     getDeck = async () => {
@@ -121,9 +171,10 @@ class MoviesInsert extends Component {
             } else {
                 this.setState({
                     helperState: "deckReceived",
-                    name: data.name,
                     deckName: data.generatedDeck.name,
-                    dokLink: data.generatedDeck.dokLink
+                    dokLink: data.generatedDeck.dokLink,
+                    rerollDesc: data.rerollDesc,
+                    rerollActive: data.rerollActive
                 })
             }
         } catch (e) {
@@ -165,16 +216,26 @@ class MoviesInsert extends Component {
 
     showDeckPhase()
     {
-        const { name, deckName, dokLink } = this.state
+        const { name, deckName, dokLink, rerollDesc, rerollActive, loading } = this.state
         return (
-            <InfoContainer>
-                <InfoLine>TCO Nickname: {name}</InfoLine>
+            <CenteredVertically>
+                <InfoContainer>
+                    <InfoLine>TCO Nickname: {name}</InfoLine>
 
-                <InfoLine>Deck Name: {deckName}</InfoLine>
+                    <InfoLine>Deck Name: {deckName}</InfoLine>
 
-                <InfoLine>DoK Link:</InfoLine>
-                <InfoLine><a href={dokLink}>{dokLink}</a></InfoLine>
-            </InfoContainer>
+                    <InfoLine>DoK Link:</InfoLine>
+                    <InfoLine><a href={dokLink}>{dokLink}</a></InfoLine>
+                </InfoContainer>
+                <Form onSubmit={(event) => {
+                    event.preventDefault();
+                    this.rerollDeck();
+                }}>
+                    <RerollButton type="submit" disabled={rerollActive}>
+                        { loading ? <LoadingIndicator /> : rerollDesc}
+                    </RerollButton>
+                </Form>
+            </CenteredVertically>
         )
     }
 
